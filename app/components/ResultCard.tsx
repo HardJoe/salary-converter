@@ -32,40 +32,39 @@ export function ResultCard({
   return (
     <div className="w-full max-w-2xl mt-lg animate-fade-in">
       <div className="bg-white border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl">
-        <div className="flex items-center gap-sm mb-lg">
-          <span className="material-symbols-outlined text-primary text-[20px]">
-            calculate
-          </span>
-          <h2 className="font-manrope text-h3 text-on-surface">
-            Salary Comparison
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-md mb-lg">
-          {/* Converted salary */}
-          <div className="bg-surface-container-low rounded-xl p-lg">
-            <p className="font-inter text-label-sm text-on-surface-variant uppercase tracking-widest mb-sm">
-              Converted Salary
-            </p>
-            <p className="font-manrope text-h2 text-on-surface font-tnum">
-              {formatCurrency(convertedSalary, toSymbol, toCurrency)}
-            </p>
-            <p className="font-inter text-body-sm text-secondary mt-xs">
-              Direct currency conversion
-            </p>
-          </div>
-
-          {/* Adjusted salary */}
-          <div className="bg-surface-container-low rounded-xl p-lg">
-            <p className="font-inter text-label-sm text-on-surface-variant uppercase tracking-widest mb-sm">
-              Purchasing Power Equivalent
-            </p>
-            <p className="font-manrope text-h2 text-on-surface font-tnum">
-              {formatCurrency(adjustedSalary, toSymbol, toCurrency)}
-            </p>
-            <p className="font-inter text-body-sm text-secondary mt-xs">
-              Adjusted for cost of living
-            </p>
+        <div className="flex flex-col items-center gap-xl mb-lg">
+          <div className="w-full flex flex-col md:flex-row items-center justify-between gap-lg">
+            <div className="text-center md:text-left">
+              <div className="font-inter text-label-sm text-secondary uppercase tracking-wider mb-xs">
+                Current ({fromCountry.name})
+              </div>
+              <div className="font-manrope text-h1 text-on-surface font-tnum">
+                {formatCurrency(
+                  result.annualSalary,
+                  result.fromSymbol,
+                  result.fromCurrency,
+                )}
+              </div>
+              <div className="font-inter text-body-sm text-secondary mt-xs">
+                Gross Annual
+              </div>
+            </div>
+            <div className="flex items-center justify-center p-md bg-surface-container rounded-full">
+              <span className="material-symbols-outlined text-primary text-3xl">
+                trending_flat
+              </span>
+            </div>
+            <div className="text-center md:text-right">
+              <div className="font-inter text-label-sm text-primary uppercase tracking-wider mb-xs">
+                {toCountry.name} Equivalent
+              </div>
+              <div className="font-manrope text-h1 text-primary font-tnum">
+                {formatCurrency(adjustedSalary, toSymbol, toCurrency)}
+              </div>
+              <div className="font-inter text-body-sm text-secondary mt-xs">
+                Gross Annual
+              </div>
+            </div>
           </div>
         </div>
 

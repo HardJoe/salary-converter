@@ -59,5 +59,5 @@ export function formatCurrency(amount: number, symbol: string, currency: string)
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(Math.round(amount))
-  return `${symbol}${formatted} ${currency}`
+  return `${currency} ${formatted}`
 }
