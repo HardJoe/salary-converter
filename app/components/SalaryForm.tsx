@@ -86,12 +86,18 @@ export function SalaryForm({
                 {fromCountry.symbol}
               </span>
               <input
-                type="number"
+                type="text"
                 autoFocus
                 value={salary || ''}
-                onChange={(e) => onSalaryChange(Number(e.target.value))}
+                onChange={(e) => {
+                  const filtered = validateAndFilterInput(e.target.value, (salary || '').toString())
+                  const numValue = filtered === '' ? 0 : parseFloat(filtered.replace(',', '.'))
+                  onSalaryChange(numValue)
+                }}
                 placeholder="0.00"
-                className="w-full h-12 pl-10 pr-md bg-white border border-outline-variant rounded-lg focus:ring-4 focus:ring-primary/15 focus:border-primary transition-all outline-none font-inter text-body-md font-semibold text-on-surface"
+                className="w-full h-12 pr-md bg-white border border-outline-variant rounded-lg focus:ring-4 focus:ring-primary/15 focus:border-primary transition-all outline-none font-inter text-body-md font-semibold text-on-surface"
+                style={{ paddingLeft: '1rem', width: calculateInputWidth(fromCountry.symbol.length) }}
+                inputMode="decimal"
               />
             </div>
           </div>
