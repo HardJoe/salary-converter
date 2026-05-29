@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { countries } from '../lib/countries'
+import {
+  calculateInputWidth,
+  validateAndFilterInput,
+  convertSalaryByFrequency,
+} from '../lib/salaryInput'
 import type { Country, Frequency } from '../types'
 
 interface SalaryFormProps {
