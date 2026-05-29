@@ -1,3 +1,5 @@
+import type { Frequency } from '../types'
+
 // Currency codes that use no decimal places
 const NO_DECIMAL_CURRENCIES = new Set(['JPY', 'KRW', 'IDR', 'CNY', 'VND'])
 
@@ -69,4 +71,41 @@ export function validateAndFilterInput(input: string, previousValue: string = ''
   }
 
   return filtered
+}
+
+/**
+ * Converts salary between yearly and monthly frequencies.
+ * - Yearly to Monthly: divide by 12
+ * - Monthly to Yearly: multiply by 12
+ * Rounding is applied based on currency decimal places.
+ * @param salary - The salary amount to convert
+ * @param fromFrequency - Current frequency ('yearly' or 'monthly')
+ * @param toFrequency - Target frequency ('yearly' or 'monthly')
+ * @param currency - ISO currency code (e.g., 'USD', 'JPY')
+ * @returns Converted salary amount, rounded appropriately
+ */
+export function convertSalaryByFrequency(
+  salary: number,
+  fromFrequency: Frequency,
+  toFrequency: Frequency,
+  currency: string
+): number {
+  // If frequencies are the same, return salary as-is
+  if (fromFrequency === toFrequency) {
+    return salary
+  }
+
+  // Perform the conversion
+  const converted = fromFrequency === 'yearly' ? salary / 12 : salary * 12
+
+  // Get decimal places for this currency
+  const decimals = getCurrencyDecimalPlaces(currency)
+
+  // Round to the appropriate decimal places
+  if (decimals === 0) {
+    return Math.round(converted)
+  } else {
+    // For 2 decimals: multiply by 100, round, divide by 100
+    return Math.round(converted * Math.pow(10, decimals)) / Math.pow(10, decimals)
+  }
 }
