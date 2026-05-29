@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { countries } from '../lib/countries'
 
 export function CurrencyRotator() {
   // Extract unique currencies with their display names
-  const uniqueCurrencies = Array.from(
-    new Map(
-      countries.map((c) => [
-        c.currency,
-        {
-          code: c.currency,
-          name: getCurrencyName(c.currency),
-        },
-      ])
-    ).values()
-  ).sort((a, b) => a.name.localeCompare(b.name))
+  const uniqueCurrencies = useMemo(() => {
+    return Array.from(
+      new Map(
+        countries.map((c) => [
+          c.currency,
+          {
+            code: c.currency,
+            name: getCurrencyName(c.currency),
+          },
+        ])
+      ).values()
+    ).sort((a, b) => a.name.localeCompare(b.name))
+  }, [])
 
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -33,7 +35,7 @@ export function CurrencyRotator() {
 
   return (
     <span className="font-bold text-primary whitespace-nowrap">
-      <span key={activeCurrency.code} className="inline-block animate-slide-up">
+      <span className="inline-block animate-slide-up">
         {activeCurrency.name}
       </span>
     </span>
