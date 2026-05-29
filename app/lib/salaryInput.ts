@@ -38,7 +38,7 @@ export function calculateInputPaddingLeft(symbolLength: number): string {
   // Symbol width: 1rem per character (monospace approximation)
   // Buffer after symbol for readability: 0.5rem
   // Total padding: 1 (position) + symbolLength (symbol width) + 0.5 (buffer)
-  const totalPadding = 1 + symbolLength + 0.5
+  const totalPadding = 1 + symbolLength + 0.2
   return `${totalPadding}rem`
 }
 
