@@ -155,7 +155,7 @@ export function SalaryForm({
           <button
             type="button"
             onClick={onCompare}
-            disabled={loading || !salary}
+            disabled={loading || !salary || fromCountry.code === toCountry.code}
             className="w-full py-md bg-primary hover:bg-primary-container disabled:opacity-60 disabled:cursor-not-allowed text-on-primary font-inter font-semibold text-label-md rounded-lg shadow-primary-glow transition-all flex items-center justify-center gap-sm active:scale-[0.98]"
           >
             {loading ? (
