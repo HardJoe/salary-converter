@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, memo } from 'react'
 import { countries } from '../lib/countries'
 
-export function CurrencyRotator() {
+export const CurrencyRotator = memo(function CurrencyRotator() {
   // Extract unique currencies with their display names
   const uniqueCurrencies = useMemo(() => {
     return Array.from(
@@ -34,13 +34,13 @@ export function CurrencyRotator() {
   }
 
   return (
-    <span className="font-bold text-primary whitespace-nowrap">
+    <span className="text-primary whitespace-nowrap">
       <span className="inline-block animate-slide-up">
         {activeCurrency.name}
       </span>
     </span>
   )
-}
+})
 
 function getCurrencyName(code: string): string {
   const names: Record<string, string> = {
