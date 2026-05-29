@@ -49,16 +49,16 @@ export const CurrencyRotator = memo(function CurrencyRotator() {
 
   return (
     <span
-      className="text-primary inline-block relative overflow-hidden"
+      className="text-primary inline-block relative overflow-hidden font-bold"
       style={{
-        minWidth: '7rem',
+        minWidth: '8rem',
         height: '1.2em',
         verticalAlign: 'bottom',
       }}
     >
       {/* Current: exits upward */}
       <span
-        className="absolute inset-x-0 top-0 whitespace-nowrap"
+        className="absolute left-0 top-0 whitespace-nowrap"
         style={{
           transform: transitioning ? 'translateY(-110%)' : 'translateY(0)',
           transition: transitioning
@@ -71,7 +71,7 @@ export const CurrencyRotator = memo(function CurrencyRotator() {
 
       {/* Next: enters from below */}
       <span
-        className="absolute inset-x-0 top-0 whitespace-nowrap"
+        className="absolute left-0 top-0 whitespace-nowrap"
         style={{
           transform: transitioning ? 'translateY(0)' : 'translateY(110%)',
           transition: transitioning

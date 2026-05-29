@@ -82,12 +82,12 @@ function HomePage() {
   return (
     <main className="flex-grow pt-16 hero-gradient flex items-center justify-center">
       <section className="max-w-container-max mx-auto px-gutter w-full py-xl flex flex-col items-center">
-        <div className="text-center mb-md max-w-2xl">
-          <h1 className="font-display text-h2 font-normal text-on-surface mb-md whitespace-nowrap">
+        <div className="text-center mb-xl max-w-2xl">
+          <h1 className="font-medium text-h1 text-on-surface mb-md whitespace-nowrap relative left-4">
             Know your worth in <CurrencyRotator />
           </h1>
           <p className="font-inter text-body-sm text-secondary">
-            Compare purchasing power and net income between 150+ countries with our high-fidelity
+            Compare purchasing power between 150+ countries with our high-fidelity
             relocation calculator.
           </p>
         </div>
