@@ -114,7 +114,13 @@ export function SalaryForm({
             <div className="flex bg-surface-container-low p-xs rounded-lg border border-outline-variant h-12">
               <button
                 type="button"
-                onClick={() => onFrequencyChange('yearly')}
+                onClick={() => {
+                  if (frequency !== 'yearly') {
+                    const converted = convertSalaryByFrequency(salary, frequency, 'yearly', fromCountry.currency)
+                    onSalaryChange(converted)
+                    onFrequencyChange('yearly')
+                  }
+                }}
                 className={`px-lg rounded-md font-inter text-label-md transition-all ${
                   frequency === 'yearly'
                     ? 'bg-primary text-on-primary shadow-sm'
@@ -125,7 +131,13 @@ export function SalaryForm({
               </button>
               <button
                 type="button"
-                onClick={() => onFrequencyChange('monthly')}
+                onClick={() => {
+                  if (frequency !== 'monthly') {
+                    const converted = convertSalaryByFrequency(salary, frequency, 'monthly', fromCountry.currency)
+                    onSalaryChange(converted)
+                    onFrequencyChange('monthly')
+                  }
+                }}
                 className={`px-lg rounded-md font-inter text-label-md transition-all ${
                   frequency === 'monthly'
                     ? 'bg-primary text-on-primary shadow-sm'
