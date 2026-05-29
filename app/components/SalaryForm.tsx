@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { countries } from '../lib/countries'
 import {
-  calculateInputWidth,
+  calculateInputPaddingLeft,
   validateAndFilterInput,
   convertSalaryByFrequency,
 } from '../lib/salaryInput'
@@ -102,7 +102,7 @@ export function SalaryForm({
                 }}
                 placeholder="0.00"
                 className="w-full h-12 pr-md bg-white border border-outline-variant rounded-lg focus:ring-4 focus:ring-primary/15 focus:border-primary transition-all outline-none font-inter text-body-md font-semibold text-on-surface"
-                style={{ paddingLeft: '1rem', width: calculateInputWidth(fromCountry.symbol.length) }}
+                style={{ paddingLeft: calculateInputPaddingLeft(fromCountry.symbol.length) }}
                 inputMode="decimal"
               />
             </div>

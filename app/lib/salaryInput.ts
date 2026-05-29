@@ -28,6 +28,21 @@ export function calculateInputWidth(symbolLength: number): string {
 }
 
 /**
+ * Calculates left padding for input field to prevent overlap with currency symbol.
+ * Input uses full width with dynamic left padding based on symbol length.
+ * @param symbolLength - Length of the currency symbol (1-3 characters)
+ * @returns CSS padding-left value in rem (e.g., "3rem")
+ */
+export function calculateInputPaddingLeft(symbolLength: number): string {
+  // Symbol position from left: 1rem (md spacing)
+  // Symbol width: 1rem per character (monospace approximation)
+  // Buffer after symbol for readability: 0.5rem
+  // Total padding: 1 (position) + symbolLength (symbol width) + 0.5 (buffer)
+  const totalPadding = 1 + symbolLength + 0.5
+  return `${totalPadding}rem`
+}
+
+/**
  * Filters and validates salary input in real-time.
  * - Only allows: digits (0-9), comma, period
  * - Enforces one decimal separator: if comma is present, period is filtered (and vice versa)
