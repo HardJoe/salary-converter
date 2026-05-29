@@ -94,6 +94,12 @@ export function SalaryForm({
                   const numValue = filtered === '' ? 0 : parseFloat(filtered.replace(',', '.'))
                   onSalaryChange(numValue)
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    onCompare()
+                  }
+                }}
                 placeholder="0.00"
                 className="w-full h-12 pr-md bg-white border border-outline-variant rounded-lg focus:ring-4 focus:ring-primary/15 focus:border-primary transition-all outline-none font-inter text-body-md font-semibold text-on-surface"
                 style={{ paddingLeft: '1rem', width: calculateInputWidth(fromCountry.symbol.length) }}
