@@ -80,13 +80,13 @@ function HomePage() {
   }
 
   return (
-    <main className="flex-grow pt-16 hero-gradient flex items-start justify-center">
-      <section className="max-w-container-max mx-auto px-gutter w-full py-xxl flex flex-col items-center">
-        <div className="text-center mb-xl max-w-2xl">
-          <h1 className="font-display text-h1 md:text-display text-on-surface mb-md">
+    <main className="flex-grow pt-16 hero-gradient flex items-center justify-center">
+      <section className="max-w-container-max mx-auto px-gutter w-full py-xl flex flex-col items-center">
+        <div className="text-center mb-md max-w-2xl">
+          <h1 className="font-display text-h2 font-normal text-on-surface mb-md whitespace-nowrap">
             Know your worth in <CurrencyRotator />
           </h1>
-          <p className="font-inter text-body-lg text-secondary">
+          <p className="font-inter text-body-sm text-secondary">
             Compare purchasing power and net income between 150+ countries with our high-fidelity
             relocation calculator.
           </p>
