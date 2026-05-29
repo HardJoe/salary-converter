@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { SalaryForm } from '../components/SalaryForm'
 import { ResultCard } from '../components/ResultCard'
+import { CurrencyRotator } from '../components/CurrencyRotator'
 import { countries, findCountry } from '../lib/countries'
 import { getColIndex } from '../lib/costOfLiving'
 import { convertCurrency, adjustForCostOfLiving, calcPercentageDiff } from '../lib/convert'
@@ -83,7 +84,7 @@ function HomePage() {
       <section className="max-w-container-max mx-auto px-gutter w-full py-xxl flex flex-col items-center">
         <div className="text-center mb-xl max-w-2xl">
           <h1 className="font-display text-h1 md:text-display text-on-surface mb-md">
-            Know your worth, anywhere in the world.
+            Know your worth in <CurrencyRotator />
           </h1>
           <p className="font-inter text-body-lg text-secondary">
             Compare purchasing power and net income between 150+ countries with our high-fidelity
