@@ -48,7 +48,7 @@ export function SalaryForm({
     }) || "0";
 
   return (
-    <div className="w-full max-w-2xl bg-white border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl md:py-8">
+    <div className="w-full max-w-2xl bg-surface-container-lowest dark:bg-surface-container-low border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl md:py-8 transition-colors duration-200">
       <div className="space-y-lg">
         {/* Frequency Toggle */}
         <div className="flex justify-center items-center">
@@ -165,13 +165,13 @@ export function SalaryForm({
         </div>
 
         {/* Info Box */}
-        <div className="flex gap-md bg-surface-container-low rounded-lg p-md items-start">
+        <div className="flex gap-md bg-surface-container dark:bg-surface-container-high rounded-lg p-md items-start transition-colors duration-200">
           <div className="flex-shrink-0">
             <div className="flex items-center justify-center h-5 w-5 rounded-full bg-primary text-on-primary">
               <span className="font-inter text-label-sm font-semibold">i</span>
             </div>
           </div>
-          <p className="font-inter text-body-sm text-on-surface-variant">
+          <p className="font-inter text-body-sm text-on-surface-variant dark:text-on-surface-variant">
             An offer of{" "}
             <span className="font-semibold text-on-surface">
               {fromCountry.currency} {formattedSalary}
@@ -249,7 +249,7 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="flex items-center justify-between px-md h-10 bg-white border border-outline-variant rounded-lg w-full hover:bg-slate-50 transition-colors focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary"
+        className="flex items-center justify-between px-md h-10 bg-surface-container-lowest dark:bg-surface-container border border-outline-variant rounded-lg w-full hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary"
       >
         <div className="flex items-center gap-sm">
           <span className="font-inter text-body-sm text-on-surface">
@@ -268,15 +268,15 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 top-full mt-1 w-full bg-white border border-outline-variant rounded-lg shadow-level-2">
-          <div className="sticky top-0 bg-white border-b border-outline-variant p-md">
+        <div className="absolute z-50 top-full mt-1 w-full bg-surface-container-lowest dark:bg-surface-container-low border border-outline-variant rounded-lg shadow-level-2 transition-colors duration-200">
+          <div className="sticky top-0 bg-surface-container-lowest dark:bg-surface-container border-b border-outline-variant p-md transition-colors duration-200">
             <input
               ref={inputRef}
               type="text"
               placeholder="Search countries..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-md h-10 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary font-inter text-body-sm"
+              className="w-full px-md h-10 bg-surface-container dark:bg-surface-container-high border border-outline-variant rounded-lg focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary font-inter text-body-sm text-on-surface dark:text-on-surface transition-colors duration-200"
             />
           </div>
           <div className="max-h-64 overflow-y-auto">
@@ -285,8 +285,8 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
                 key={country.code}
                 type="button"
                 onClick={() => handleSelect(country)}
-                className={`flex items-center gap-md px-md py-3 w-full text-left hover:bg-surface-container-low transition-colors ${
-                  country.code === value.code ? "bg-surface-container-low" : ""
+                className={`flex items-center gap-md px-md py-3 w-full text-left hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors ${
+                  country.code === value.code ? "bg-surface-container dark:bg-surface-container-high" : ""
                 }`}
               >
                 <div className="flex-1">
@@ -351,10 +351,10 @@ function SalaryInput({
         onBlur={() => setIsFocused(false)}
         placeholder="0"
         inputMode="decimal"
-        className={`w-full bg-transparent outline-none ring-0 font-inter text-3xl md:text-4xl text-on-surface font-semibold transition-all duration-200 border-b-2 pb-xs ${
+        className={`w-full bg-transparent outline-none ring-0 font-inter text-3xl md:text-4xl text-on-surface dark:text-on-surface font-semibold transition-all duration-200 border-b-2 pb-xs ${
           isFocused
             ? "border-primary border-opacity-100"
-            : "border-outline-variant/30"
+            : "border-outline-variant/30 dark:border-outline-variant/50"
         }`}
       />
     </div>

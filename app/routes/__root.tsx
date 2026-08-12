@@ -6,7 +6,9 @@ import {
   Scripts,
 } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import '../styles.css'
+import { useTheme } from '../hooks/useTheme'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,11 +34,18 @@ export const Route = createRootRoute({
         href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap',
       },
     ],
+    scripts: [
+      {
+        children: `(function(){const t=localStorage.getItem('theme');const d=t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark')})()`,
+      },
+    ],
   }),
   component: RootComponent,
 })
 
 function RootComponent() {
+  useTheme()
+
   return (
     <RootDocument>
       <Outlet />
@@ -46,11 +55,11 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="light">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body className="flex flex-col min-h-screen font-inter text-on-surface bg-background">
+      <body className="flex flex-col min-h-screen font-inter text-on-surface bg-background text-on-surface-dark transition-colors duration-200">
         <Header />
         {children}
         <Footer />
@@ -62,11 +71,18 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 
 function Header() {
+  const { isDark, toggle, mounted } = useTheme()
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm fixed top-0 w-full z-50">
+    <header className="bg-surface-container-low/80 backdrop-blur-md border-b border-outline-variant shadow-sm fixed top-0 w-full z-50 transition-colors duration-200">
       <div className="flex justify-between items-center h-16 px-gutter md:px-xxl max-w-container-max mx-auto w-full">
         <div className="flex items-center gap-8">
-          <span className="text-xl font-bold tracking-tight text-slate-900 font-manrope">
+          <span className="text-xl font-bold tracking-tight text-on-surface font-manrope">
             SalaryScale
           </span>
           <nav className="hidden md:flex gap-6">
@@ -78,23 +94,32 @@ function Header() {
             </a>
             <a
               href="#"
-              className="font-manrope text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors duration-200 cursor-pointer"
+              className="font-manrope text-sm font-medium tracking-tight text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
             >
               Market Trends
             </a>
             <a
               href="#"
-              className="font-manrope text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors duration-200 cursor-pointer"
+              className="font-manrope text-sm font-medium tracking-tight text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
             >
               Tax Guides
             </a>
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <button className="material-symbols-outlined text-slate-600 hover:bg-slate-100 transition-colors p-2 rounded-full text-[20px]">
+          {isClient && mounted && (
+            <button
+              onClick={toggle}
+              className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full text-[20px]"
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </button>
+          )}
+          <button className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full text-[20px]">
             settings
           </button>
-          <button className="material-symbols-outlined text-slate-600 hover:bg-slate-100 transition-colors p-2 rounded-full text-[20px]">
+          <button className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full text-[20px]">
             help_outline
           </button>
         </div>
@@ -105,30 +130,30 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="bg-slate-50 w-full py-12 border-t border-slate-200 mt-auto">
+    <footer className="bg-surface-container-low border-t border-outline-variant w-full py-12 mt-auto transition-colors duration-200">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-gutter md:px-xxl max-w-container-max mx-auto">
         <div className="flex flex-col gap-2">
-          <span className="font-bold text-slate-700 font-manrope">SalaryScale</span>
-          <p className="font-manrope text-xs text-slate-500">
+          <span className="font-bold text-on-surface font-manrope">SalaryScale</span>
+          <p className="font-manrope text-xs text-on-surface-variant">
             © 2026 SalaryScale Financial. All rights reserved.
           </p>
         </div>
         <div className="flex gap-8">
           <a
             href="#"
-            className="font-manrope text-xs text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer"
+            className="font-manrope text-xs text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
           >
             Privacy Policy
           </a>
           <a
             href="#"
-            className="font-manrope text-xs text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer"
+            className="font-manrope text-xs text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
           >
             Terms of Service
           </a>
           <a
             href="#"
-            className="font-manrope text-xs text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer"
+            className="font-manrope text-xs text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
           >
             Contact Support
           </a>

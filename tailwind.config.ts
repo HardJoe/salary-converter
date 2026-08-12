@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // DESIGN.md full token set
+        // Light mode (default)
         'surface': '#f8f9ff',
         'surface-dim': '#cbdbf5',
         'surface-bright': '#f8f9ff',
@@ -56,7 +56,6 @@ export default {
         'surface-variant': '#d3e4fe',
       },
       fontFamily: {
-        // Named by role (used as font-display, font-h1, etc.)
         'display': ['Manrope', 'sans-serif'],
         'h1': ['Manrope', 'sans-serif'],
         'h2': ['Manrope', 'sans-serif'],
@@ -66,7 +65,6 @@ export default {
         'body-sm': ['Inter', 'sans-serif'],
         'label-md': ['Inter', 'sans-serif'],
         'label-sm': ['Inter', 'sans-serif'],
-        // Shorthand aliases
         'manrope': ['Manrope', 'sans-serif'],
         'inter': ['Inter', 'sans-serif'],
       },

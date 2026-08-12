@@ -44,7 +44,7 @@ export function ResultCard({
 
   return (
     <div className="w-full max-w-2xl mt-lg animate-fade-in">
-      <div className="bg-white border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl">
+      <div className="bg-surface-container-lowest dark:bg-surface-container-low border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl transition-colors duration-200">
         <div className="flex flex-col items-center gap-xl mb-lg">
           <div className="w-full flex flex-col md:flex-row items-center justify-between gap-lg">
             <div className="text-center md:text-left">
@@ -62,7 +62,7 @@ export function ResultCard({
                 Gross Annual
               </div>
             </div>
-            <div className="flex items-center justify-center p-md bg-surface-container rounded-full">
+            <div className="flex items-center justify-center p-md bg-surface-container rounded-full transition-colors duration-200">
               <span className="material-symbols-outlined text-primary text-3xl">
                 trending_flat
               </span>
