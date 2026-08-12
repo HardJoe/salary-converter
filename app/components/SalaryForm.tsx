@@ -106,7 +106,7 @@ export function SalaryForm({
             <label className="font-inter text-label-sm text-on-surface-variant uppercase tracking-wide">
               Current Salary
             </label>
-            <div className="w-48">
+            <div className="w-56">
               <CountryDropdown
                 value={fromCountry}
                 options={countries}
@@ -118,7 +118,7 @@ export function SalaryForm({
             </div>
           </div>
           <div className="flex items-center gap-lg">
-            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-18 text-center">
+            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-20">
               {fromCountry.currency}
             </span>
             <SalaryInput
@@ -136,7 +136,7 @@ export function SalaryForm({
             <label className="font-inter text-label-sm text-on-surface-variant uppercase tracking-wide">
               Requires Equivalent of
             </label>
-            <div className="w-48">
+            <div className="w-56">
               <CountryDropdown
                 value={toCountry}
                 options={countries}
@@ -148,7 +148,7 @@ export function SalaryForm({
             </div>
           </div>
           <div className="flex items-center gap-lg">
-            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-18 text-center">
+            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-20">
               {toCountry.currency}
             </span>
             {loading && !result ? (
@@ -249,9 +249,9 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="flex items-center justify-between px-md h-10 bg-surface-container-lowest dark:bg-surface-container border border-outline-variant rounded-lg w-full hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary"
+        className="flex items-center justify-end gap-2 px-md h-10 bg-surface-container-lowest dark:bg-surface-container border border-outline-variant rounded-lg w-full hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary"
       >
-        <div className="flex items-center gap-sm">
+        <div className="flex items-center gap-4">
           <span className="font-inter text-body-sm text-on-surface">
             {value.name}
           </span>
@@ -286,7 +286,9 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
                 type="button"
                 onClick={() => handleSelect(country)}
                 className={`flex items-center gap-md px-md py-3 w-full text-left hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors ${
-                  country.code === value.code ? "bg-surface-container dark:bg-surface-container-high" : ""
+                  country.code === value.code
+                    ? "bg-surface-container dark:bg-surface-container-high"
+                    : ""
                 }`}
               >
                 <div className="flex-1">
