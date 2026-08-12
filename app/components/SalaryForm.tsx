@@ -3,6 +3,7 @@ import { countries } from "../lib/countries";
 import {
   validateAndFilterInput,
   convertSalaryByFrequency,
+  formatNumberWithSeparators,
 } from "../lib/salaryInput";
 import { formatCurrency } from "../lib/convert";
 import type { Country, Frequency, ConversionResult } from "../types";
@@ -52,7 +53,7 @@ export function SalaryForm({
       <div className="space-y-lg">
         {/* Frequency Toggle */}
         <div className="flex justify-center items-center">
-          <div className="flex bg-surface-container-low p-xs rounded-full">
+          <div className="flex bg-surface-container-low dark:bg-surface-container-high p-xs rounded-full">
             <button
               type="button"
               onClick={() => {
@@ -332,14 +333,10 @@ function SalaryInput({
         ref={inputRef}
         type="text"
         autoFocus
-        value={salary || ""}
+        value={formatNumberWithSeparators(salary || "")}
         onChange={(e) => {
-          const filtered = validateAndFilterInput(
-            e.target.value,
-            (salary || "").toString(),
-          );
-          const numValue =
-            filtered === "" ? 0 : parseFloat(filtered.replace(",", "."));
+          const digitsOnly = validateAndFilterInput(e.target.value);
+          const numValue = digitsOnly === "" ? 0 : parseInt(digitsOnly, 10);
           onSalaryChange(numValue);
           onCompare();
         }}
@@ -352,7 +349,7 @@ function SalaryInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder="0"
-        inputMode="decimal"
+        inputMode="numeric"
         className={`w-full bg-transparent outline-none ring-0 font-inter text-3xl md:text-4xl text-on-surface dark:text-on-surface font-semibold transition-all duration-200 border-b-2 pb-xs ${
           isFocused
             ? "border-primary border-opacity-100"

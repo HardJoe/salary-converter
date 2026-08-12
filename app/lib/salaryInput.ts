@@ -43,49 +43,23 @@ export function calculateInputPaddingLeft(symbolLength: number): string {
 }
 
 /**
- * Filters and validates salary input in real-time.
- * - Only allows: digits (0-9), comma, period
- * - Enforces one decimal separator: if comma is present, period is filtered (and vice versa)
+ * Filters salary input to only allow digits (0-9).
  * @param input - The raw input string
- * @param previousValue - The previous valid value (used to detect which separator was already used)
- * @returns Cleaned valid input string
+ * @returns Cleaned string with only digits
  */
-export function validateAndFilterInput(input: string, previousValue: string = ''): string {
-  // Step 1: Strip any character that's not a digit, comma, or period
-  let filtered = input.replace(/[^0-9,.]/g, '')
+export function validateAndFilterInput(input: string): string {
+  return input.replace(/[^0-9]/g, '')
+}
 
-  // Step 2: Determine which decimal separator (if any) is already in the previous value
-  const prevHasComma = previousValue.includes(',')
-  const prevHasPeriod = previousValue.includes('.')
-  const prevSeparator = prevHasComma ? ',' : prevHasPeriod ? '.' : null
-
-  // Step 3: Determine which separator is in the current filtered input
-  const currHasComma = filtered.includes(',')
-  const currHasPeriod = filtered.includes('.')
-
-  // Step 4: If the user has already used one separator, remove the other one
-  if (prevSeparator === ',') {
-    // Comma already used, remove all periods
-    filtered = filtered.replace(/\./g, '')
-  } else if (prevSeparator === '.') {
-    // Period already used, remove all commas
-    filtered = filtered.replace(/,/g, '')
-  } else {
-    // No previous separator, but if user just typed both, keep the first one and remove the second
-    if (currHasComma && currHasPeriod) {
-      const commaIndex = filtered.indexOf(',')
-      const periodIndex = filtered.indexOf('.')
-      if (commaIndex < periodIndex) {
-        // Comma came first, remove periods
-        filtered = filtered.replace(/\./g, '')
-      } else {
-        // Period came first, remove commas
-        filtered = filtered.replace(/,/g, '')
-      }
-    }
-  }
-
-  return filtered
+/**
+ * Formats a number with thousand separators.
+ * @param value - The numeric value to format
+ * @returns Formatted string with thousand separators (e.g., "1,234,567")
+ */
+export function formatNumberWithSeparators(value: number | string): string {
+  if (!value) return ''
+  const numStr = value.toString()
+  return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 /**
