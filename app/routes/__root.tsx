@@ -4,34 +4,38 @@ import {
   ScrollRestoration,
   HeadContent,
   Scripts,
-} from '@tanstack/react-router'
-import type { ReactNode } from 'react'
-import { useEffect, useState } from 'react'
-import '../styles.css'
-import { useTheme } from '../hooks/useTheme'
+} from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import "../styles.css";
+import { useTheme } from "../hooks/useTheme";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'SalaryScale — Global Salary Comparison' },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "SalaryScale — Global Salary Comparison" },
       {
-        name: 'description',
+        name: "description",
         content:
-          'Compare purchasing power and net income between 150+ countries with our high-fidelity relocation calculator.',
+          "Compare purchasing power and net income between 150+ countries with our high-fidelity relocation calculator.",
       },
     ],
     links: [
-      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' as const },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap',
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous" as const,
       },
       {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap',
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
       },
     ],
     scripts: [
@@ -41,16 +45,16 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
-})
+});
 
 function RootComponent() {
-  useTheme()
+  useTheme();
 
   return (
     <RootDocument>
       <Outlet />
     </RootDocument>
-  )
+  );
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
@@ -67,16 +71,16 @@ function RootDocument({ children }: { children: ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
 
 function Header() {
-  const { isDark, toggle, mounted } = useTheme()
-  const [isClient, setIsClient] = useState(false)
+  const { isDark, toggle, mounted } = useTheme();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   return (
     <header className="bg-surface-container-low/80 backdrop-blur-md border-b border-outline-variant shadow-sm fixed top-0 w-full z-50 transition-colors duration-200">
@@ -88,21 +92,9 @@ function Header() {
           <nav className="hidden md:flex gap-6">
             <a
               href="#"
-              className="font-manrope text-sm font-medium tracking-tight text-primary-container border-b-2 border-primary-container pb-1 cursor-pointer"
+              className="font-manrope text-sm font-medium tracking-tight text-primary border-b-2 border-primary-container pb-1 cursor-pointer"
             >
               Calculators
-            </a>
-            <a
-              href="#"
-              className="font-manrope text-sm font-medium tracking-tight text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
-            >
-              Market Trends
-            </a>
-            <a
-              href="#"
-              className="font-manrope text-sm font-medium tracking-tight text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
-            >
-              Tax Guides
             </a>
           </nav>
         </div>
@@ -111,21 +103,15 @@ function Header() {
             <button
               onClick={toggle}
               className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full text-[20px]"
-              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {isDark ? 'light_mode' : 'dark_mode'}
+              {isDark ? "light_mode" : "dark_mode"}
             </button>
           )}
-          <button className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full text-[20px]">
-            settings
-          </button>
-          <button className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full text-[20px]">
-            help_outline
-          </button>
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 function Footer() {
@@ -133,7 +119,9 @@ function Footer() {
     <footer className="bg-surface-container-low border-t border-outline-variant w-full py-12 mt-auto transition-colors duration-200">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-gutter md:px-xxl max-w-container-max mx-auto">
         <div className="flex flex-col gap-2">
-          <span className="font-bold text-on-surface font-manrope">SalaryScale</span>
+          <span className="font-bold text-on-surface font-manrope">
+            SalaryScale
+          </span>
           <p className="font-manrope text-xs text-on-surface-variant">
             © 2026 SalaryScale Financial. All rights reserved.
           </p>
@@ -160,5 +148,5 @@ function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
