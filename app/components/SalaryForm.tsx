@@ -1,24 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
-import { countries } from '../lib/countries'
+import { useEffect, useRef, useState } from "react";
+import { countries } from "../lib/countries";
 import {
-  calculateInputPaddingLeft,
   validateAndFilterInput,
   convertSalaryByFrequency,
-} from '../lib/salaryInput'
-import type { Country, Frequency } from '../types'
+} from "../lib/salaryInput";
+import { formatCurrency } from "../lib/convert";
+import type { Country, Frequency, ConversionResult } from "../types";
 
 interface SalaryFormProps {
-  salary: number
-  frequency: Frequency
-  fromCountry: Country
-  toCountry: Country
-  loading: boolean
-  onSalaryChange: (v: number) => void
-  onFrequencyChange: (v: Frequency) => void
-  onFromCountryChange: (v: Country) => void
-  onToCountryChange: (v: Country) => void
-  onSwap: () => void
-  onCompare: () => void
+  salary: number;
+  frequency: Frequency;
+  fromCountry: Country;
+  toCountry: Country;
+  loading: boolean;
+  offeredSalary: number;
+  result?: ConversionResult | null;
+  onSalaryChange: (v: number) => void;
+  onFrequencyChange: (v: Frequency) => void;
+  onFromCountryChange: (v: Country) => void;
+  onToCountryChange: (v: Country) => void;
+  onOfferedSalaryChange: (v: number) => void;
+  onSwap: () => void;
+  onCompare: () => void;
+  salaryInputRef?: React.RefObject<HTMLInputElement>;
 }
 
 export function SalaryForm({
@@ -27,200 +31,217 @@ export function SalaryForm({
   fromCountry,
   toCountry,
   loading,
+  offeredSalary,
+  result,
   onSalaryChange,
   onFrequencyChange,
   onFromCountryChange,
   onToCountryChange,
+  onOfferedSalaryChange,
   onSwap,
   onCompare,
 }: SalaryFormProps) {
-  return (
-    <div className="w-full max-w-2xl bg-white border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl">
-      <div className="grid grid-cols-1 gap-lg">
-        {/* Row 1: Country selectors + swap */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-md items-center">
-          <div className="w-full">
-            <label className="font-inter text-label-md text-on-surface-variant mb-xs block">
-              Current Country
-            </label>
-            <CountryDropdown
-              value={fromCountry}
-              options={countries}
-              onChange={onFromCountryChange}
-            />
-          </div>
+  const formattedSalary =
+    salary?.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }) || "0";
 
-          <div className="flex justify-center md:pt-6">
+  return (
+    <div className="w-full max-w-2xl bg-white border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl md:py-8">
+      <div className="space-y-lg">
+        {/* Frequency Toggle */}
+        <div className="flex justify-center items-center">
+          <div className="flex bg-surface-container-low p-xs rounded-full">
             <button
               type="button"
-              onClick={onSwap}
-              title="Swap countries"
-              className="bg-surface-container-lowest border border-outline-variant w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-50 transition-colors active:scale-90 shadow-level-1"
+              onClick={() => {
+                if (frequency !== "yearly") {
+                  const converted = convertSalaryByFrequency(
+                    salary,
+                    frequency,
+                    "yearly",
+                    fromCountry.currency,
+                  );
+                  onSalaryChange(converted);
+                  onFrequencyChange("yearly");
+                }
+              }}
+              className={`px-lg py-sm rounded-full font-inter text-label-md transition-all ${
+                frequency === "yearly"
+                  ? "bg-primary text-on-primary shadow-sm"
+                  : "text-secondary hover:text-on-surface"
+              }`}
             >
-              <span className="material-symbols-outlined text-primary text-[20px]">
-                swap_horiz
-              </span>
+              Yearly
             </button>
-          </div>
-
-          <div className="w-full">
-            <label className="font-inter text-label-md text-on-surface-variant mb-xs block">
-              Target Country
-            </label>
-            <CountryDropdown
-              value={toCountry}
-              options={countries}
-              onChange={onToCountryChange}
-            />
+            <button
+              type="button"
+              onClick={() => {
+                if (frequency !== "monthly") {
+                  const converted = convertSalaryByFrequency(
+                    salary,
+                    frequency,
+                    "monthly",
+                    fromCountry.currency,
+                  );
+                  onSalaryChange(converted);
+                  onFrequencyChange("monthly");
+                }
+              }}
+              className={`px-lg py-xs rounded-full font-inter text-label-md transition-all ${
+                frequency === "monthly"
+                  ? "bg-primary text-on-primary shadow-sm"
+                  : "text-secondary hover:text-on-surface"
+              }`}
+            >
+              Monthly
+            </button>
           </div>
         </div>
 
-        {/* Row 2: Salary input + frequency toggle */}
-        <div className="flex flex-col md:flex-row gap-lg items-end">
-          <div className="flex-grow w-full">
-            <label className="font-inter text-label-md text-on-surface-variant mb-xs block">
+        {/* Current Salary Section with Country Dropdown */}
+        <div>
+          <div className="flex items-center justify-between mb-md">
+            <label className="font-inter text-label-sm text-on-surface-variant uppercase tracking-wide">
               Current Salary
             </label>
-            <div className="relative">
-              <span className="absolute left-md top-1/2 -translate-y-1/2 text-secondary font-medium font-inter select-none">
-                {fromCountry.symbol}
-              </span>
-              <input
-                type="text"
-                autoFocus
-                value={salary || ''}
-                onChange={(e) => {
-                  const filtered = validateAndFilterInput(e.target.value, (salary || '').toString())
-                  const numValue = filtered === '' ? 0 : parseFloat(filtered.replace(',', '.'))
-                  onSalaryChange(numValue)
+            <div className="w-48">
+              <CountryDropdown
+                value={fromCountry}
+                options={countries}
+                onChange={(c) => {
+                  onFromCountryChange(c);
+                  onCompare();
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    onCompare()
-                  }
-                }}
-                placeholder="0.00"
-                className="w-full h-12 pr-md bg-white border border-outline-variant rounded-lg focus:ring-4 focus:ring-primary/15 focus:border-primary transition-all outline-none font-inter text-body-md font-semibold text-on-surface"
-                style={{ paddingLeft: calculateInputPaddingLeft(fromCountry.symbol.length) }}
-                inputMode="decimal"
               />
             </div>
           </div>
-          <div className="w-full md:w-auto flex-shrink-0">
-            <label className="font-inter text-label-md text-on-surface-variant mb-xs block">
-              Frequency
-            </label>
-            <div className="flex bg-surface-container-low p-xs rounded-lg border border-outline-variant h-12">
-              <button
-                type="button"
-                onClick={() => {
-                  if (frequency !== 'yearly') {
-                    const converted = convertSalaryByFrequency(salary, frequency, 'yearly', fromCountry.currency)
-                    onSalaryChange(converted)
-                    onFrequencyChange('yearly')
-                  }
-                }}
-                className={`px-lg rounded-md font-inter text-label-md transition-all ${
-                  frequency === 'yearly'
-                    ? 'bg-primary text-on-primary shadow-sm'
-                    : 'text-secondary hover:text-on-surface'
-                }`}
-              >
-                Yearly
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (frequency !== 'monthly') {
-                    const converted = convertSalaryByFrequency(salary, frequency, 'monthly', fromCountry.currency)
-                    onSalaryChange(converted)
-                    onFrequencyChange('monthly')
-                  }
-                }}
-                className={`px-lg rounded-md font-inter text-label-md transition-all ${
-                  frequency === 'monthly'
-                    ? 'bg-primary text-on-primary shadow-sm'
-                    : 'text-secondary hover:text-on-surface'
-                }`}
-              >
-                Monthly
-              </button>
-            </div>
+          <div className="flex items-center gap-lg">
+            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-18 text-center">
+              {fromCountry.currency}
+            </span>
+            <SalaryInput
+              salary={salary}
+              onSalaryChange={onSalaryChange}
+              onCompare={onCompare}
+              symbol={fromCountry.symbol}
+            />
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="mt-md">
-          <button
-            type="button"
-            onClick={onCompare}
-            disabled={loading || !salary || fromCountry.code === toCountry.code}
-            className="w-full py-md bg-primary hover:bg-primary-container disabled:opacity-60 disabled:cursor-not-allowed text-on-primary font-inter font-semibold text-label-md rounded-lg shadow-primary-glow transition-all flex items-center justify-center gap-sm active:scale-[0.98]"
-          >
-            {loading ? (
-              <>
-                <LoadingSpinner />
-                Calculating…
-              </>
+        {/* Equivalent Salary Section with Country Dropdown */}
+        <div>
+          <div className="flex items-center justify-between mb-md">
+            <label className="font-inter text-label-sm text-on-surface-variant uppercase tracking-wide">
+              Requires Equivalent of
+            </label>
+            <div className="w-48">
+              <CountryDropdown
+                value={toCountry}
+                options={countries}
+                onChange={(c) => {
+                  onToCountryChange(c);
+                  onCompare();
+                }}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-lg">
+            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-18 text-center">
+              {toCountry.currency}
+            </span>
+            {loading && !result ? (
+              <Skeleton className="h-7 w-40 rounded" />
             ) : (
-              <>
-                Compare Salary
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'wght' 600" }}>
-                  arrow_forward
-                </span>
-              </>
+              <span className="font-inter text-3xl md:text-4xl font-semibold text-on-surface">
+                {result?.adjustedSalary?.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }) || "0"}
+              </span>
             )}
-          </button>
+          </div>
+        </div>
+
+        {/* Info Box */}
+        <div className="flex gap-md bg-surface-container-low rounded-lg p-md items-start">
+          <div className="flex-shrink-0">
+            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-primary text-on-primary">
+              <span className="font-inter text-label-sm font-semibold">i</span>
+            </div>
+          </div>
+          <p className="font-inter text-body-sm text-on-surface-variant">
+            An offer of{" "}
+            <span className="font-semibold text-on-surface">
+              {fromCountry.currency} {formattedSalary}
+            </span>{" "}
+            is worth roughly{" "}
+            <span className="font-semibold text-on-surface">
+              {toCountry.currency}{" "}
+              {loading && !result ? (
+                <Skeleton className="inline-block h-5 w-12 rounded" />
+              ) : (
+                result?.adjustedSalary?.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }) || "0"
+              )}
+            </span>{" "}
+            in purchasing power.
+          </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Country Dropdown ────────────────────────────────────────────────────────
 
 interface CountryDropdownProps {
-  value: Country
-  options: Country[]
-  onChange: (c: Country) => void
+  value: Country;
+  options: Country[];
+  onChange: (c: Country) => void;
 }
 
 function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const ref = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const sortedOptions = [...options].sort((a, b) => a.name.localeCompare(b.name))
+  const sortedOptions = [...options].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   const filteredOptions = search
-    ? sortedOptions.filter((c) =>
-        c.name.toLowerCase().includes(search.toLowerCase()) ||
-        c.currency.toLowerCase().includes(search.toLowerCase())
+    ? sortedOptions.filter(
+        (c) =>
+          c.name.toLowerCase().includes(search.toLowerCase()) ||
+          c.currency.toLowerCase().includes(search.toLowerCase()),
       )
-    : sortedOptions
+    : sortedOptions;
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isOpen])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   function handleSelect(country: Country) {
-    onChange(country)
-    setIsOpen(false)
-    setSearch('')
+    onChange(country);
+    setIsOpen(false);
+    setSearch("");
   }
 
   return (
@@ -228,12 +249,19 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="flex items-center justify-between px-md h-12 bg-white border border-outline-variant rounded-lg w-full hover:bg-slate-50 transition-colors focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary"
+        className="flex items-center justify-between px-md h-10 bg-white border border-outline-variant rounded-lg w-full hover:bg-slate-50 transition-colors focus:outline-none focus:ring-4 focus:ring-primary/15 focus:border-primary"
       >
-        <span className="font-inter text-body-md text-on-surface">{value.name}</span>
+        <div className="flex items-center gap-sm">
+          <span className="font-inter text-body-sm text-on-surface">
+            {value.name}
+          </span>
+          <span className="font-inter text-label-sm text-secondary">
+            {value.currency}
+          </span>
+        </div>
         <span
           className="material-symbols-outlined text-secondary text-[20px] transition-transform"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
         >
           expand_more
         </span>
@@ -258,38 +286,227 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
                 type="button"
                 onClick={() => handleSelect(country)}
                 className={`flex items-center gap-md px-md py-3 w-full text-left hover:bg-surface-container-low transition-colors ${
-                  country.code === value.code ? 'bg-surface-container-low' : ''
+                  country.code === value.code ? "bg-surface-container-low" : ""
                 }`}
               >
                 <div className="flex-1">
-                  <span className="font-inter text-body-sm text-on-surface">{country.name}</span>
+                  <span className="font-inter text-body-sm text-on-surface">
+                    {country.name}
+                  </span>
                 </div>
-                <span className="font-inter text-label-sm text-secondary">{country.currency}</span>
+                <span className="font-inter text-label-sm text-secondary">
+                  {country.currency}
+                </span>
               </button>
             ))}
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
-// ─── Loading Spinner ─────────────────────────────────────────────────────────
+// ─── Salary Input ───────────────────────────────────────────────────────────
 
-function LoadingSpinner() {
+interface SalaryInputProps {
+  salary: number;
+  onSalaryChange: (v: number) => void;
+  onCompare: () => void;
+  symbol: string;
+}
+
+function SalaryInput({
+  salary,
+  onSalaryChange,
+  onCompare,
+  symbol,
+}: SalaryInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
-    <svg
-      className="animate-spin h-4 w-4 text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+    <div className="flex-1">
+      <input
+        ref={inputRef}
+        type="text"
+        autoFocus
+        value={salary || ""}
+        onChange={(e) => {
+          const filtered = validateAndFilterInput(
+            e.target.value,
+            (salary || "").toString(),
+          );
+          const numValue =
+            filtered === "" ? 0 : parseFloat(filtered.replace(",", "."));
+          onSalaryChange(numValue);
+          onCompare();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            onCompare();
+          }
+        }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder="0"
+        inputMode="decimal"
+        className={`w-full bg-transparent outline-none ring-0 font-inter text-3xl md:text-4xl text-on-surface font-semibold transition-all duration-200 border-b-2 pb-xs ${
+          isFocused
+            ? "border-primary border-opacity-100"
+            : "border-outline-variant/30"
+        }`}
       />
-    </svg>
-  )
+    </div>
+  );
+}
+
+// ─── Skeleton Loader ────────────────────────────────────────────────────────
+
+interface SkeletonProps {
+  className?: string;
+}
+
+function Skeleton({ className = "" }: SkeletonProps) {
+  return (
+    <div
+      className={`bg-gradient-to-r from-surface-container-low via-surface-container to-surface-container-low bg-[length:200%_100%] animate-shimmer ${className}`}
+    />
+  );
+}
+
+// ─── Inline Result Display ──────────────────────────────────────────────────
+
+interface InlineResultProps {
+  result: ConversionResult;
+  fromCountry: Country;
+  toCountry: Country;
+}
+
+function InlineResult({ result, fromCountry, toCountry }: InlineResultProps) {
+  const {
+    convertedSalary,
+    adjustedSalary,
+    percentageDiff,
+    toSymbol,
+    toCurrency,
+    offeredSalary,
+    offeredVsEquivalentDiff,
+  } = result;
+
+  const isPositive = percentageDiff > 0;
+  const absPercent = Math.abs(percentageDiff).toFixed(1);
+
+  const message = isPositive
+    ? `You need ${absPercent}% more salary to maintain your lifestyle`
+    : percentageDiff < -0.5
+      ? `Your money goes ${absPercent}% further in ${toCountry.name}`
+      : `Your purchasing power is roughly equal`;
+
+  const isOfferedHigher =
+    offeredVsEquivalentDiff !== undefined && offeredVsEquivalentDiff > 0;
+
+  return (
+    <div className="mt-lg space-y-md animate-fade-in">
+      {/* Cost of Living Difference */}
+      <div
+        className={`p-md rounded-lg border transition-all duration-300 ${
+          isPositive
+            ? "bg-red-50 border-red-200"
+            : percentageDiff < -0.5
+              ? "bg-green-50 border-green-200"
+              : "bg-surface-container-low border-outline-variant"
+        }`}
+      >
+        <div className="flex items-baseline gap-xs mb-xs">
+          <span
+            className={`font-manrope text-2xl md:text-3xl font-semibold font-tnum ${
+              isPositive
+                ? "text-red-700"
+                : percentageDiff < -0.5
+                  ? "text-green-700"
+                  : "text-on-surface"
+            }`}
+          >
+            {isPositive ? "+" : percentageDiff < -0.5 ? "-" : ""}
+            {absPercent}%
+          </span>
+          <span
+            className={`font-inter text-label-xs uppercase tracking-widest px-xs py-0.5 rounded-full ${
+              isPositive
+                ? "bg-red-100 text-red-700"
+                : percentageDiff < -0.5
+                  ? "bg-green-100 text-green-700"
+                  : "bg-surface-container text-secondary"
+            }`}
+          >
+            {isPositive
+              ? "Higher cost"
+              : percentageDiff < -0.5
+                ? "Lower cost"
+                : "Similar cost"}
+          </span>
+        </div>
+        <p className="font-inter text-body-sm text-on-surface-variant">
+          {message}
+        </p>
+      </div>
+
+      {/* Offered Salary Comparison */}
+      {offeredSalary && offeredVsEquivalentDiff !== undefined && (
+        <div
+          className={`p-md rounded-lg border transition-all duration-300 ${
+            isOfferedHigher
+              ? "bg-green-50 border-green-200"
+              : offeredVsEquivalentDiff < -0.5
+                ? "bg-red-50 border-red-200"
+                : "bg-surface-container-low border-outline-variant"
+          }`}
+        >
+          <div className="flex items-baseline gap-xs mb-xs">
+            <span
+              className={`font-manrope text-xl md:text-2xl font-semibold font-tnum ${
+                isOfferedHigher
+                  ? "text-green-700"
+                  : offeredVsEquivalentDiff < -0.5
+                    ? "text-red-700"
+                    : "text-on-surface"
+              }`}
+            >
+              {isOfferedHigher
+                ? "+"
+                : offeredVsEquivalentDiff < -0.5
+                  ? "-"
+                  : ""}
+              {Math.abs(offeredVsEquivalentDiff).toFixed(1)}%
+            </span>
+            <span
+              className={`font-inter text-label-xs uppercase tracking-widest px-xs py-0.5 rounded-full ${
+                isOfferedHigher
+                  ? "bg-green-100 text-green-700"
+                  : offeredVsEquivalentDiff < -0.5
+                    ? "bg-red-100 text-red-700"
+                    : "bg-surface-container text-secondary"
+              }`}
+            >
+              {isOfferedHigher
+                ? "Better offer"
+                : offeredVsEquivalentDiff < -0.5
+                  ? "Lower offer"
+                  : "Fair offer"}
+            </span>
+          </div>
+          <p className="font-inter text-body-sm text-on-surface-variant">
+            Your offer is{" "}
+            {isOfferedHigher
+              ? "higher than"
+              : isOfferedHigher === false && offeredVsEquivalentDiff < -0.5
+                ? "lower than"
+                : "equal to"}{" "}
+            the equivalent salary
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }

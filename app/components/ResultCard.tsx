@@ -18,6 +18,8 @@ export function ResultCard({
     percentageDiff,
     toSymbol,
     toCurrency,
+    offeredSalary,
+    offeredVsEquivalentDiff,
   } = result;
 
   const isPositive = percentageDiff > 0;
@@ -28,6 +30,17 @@ export function ResultCard({
     : percentageDiff < -0.5
       ? `Your money goes ${absPercent}% further in ${toCountry.name}`
       : `Your purchasing power is roughly equal in ${toCountry.name}`;
+
+  const isOfferedHigher = offeredVsEquivalentDiff !== undefined && offeredVsEquivalentDiff > 0;
+  const offeredAbsPercent = offeredVsEquivalentDiff !== undefined ? Math.abs(offeredVsEquivalentDiff).toFixed(1) : '0';
+
+  const offeredMessage = offeredVsEquivalentDiff !== undefined
+    ? isOfferedHigher
+      ? `Your offer is ${offeredAbsPercent}% higher than the equivalent salary`
+      : offeredVsEquivalentDiff < -0.5
+        ? `Your offer is ${offeredAbsPercent}% lower than the equivalent salary`
+        : `Your offer is roughly equal to the equivalent salary`
+    : '';
 
   return (
     <div className="w-full max-w-2xl mt-lg animate-fade-in">
@@ -138,6 +151,78 @@ export function ResultCard({
             </p>
           </div>
         </div>
+
+        {offeredSalary && offeredVsEquivalentDiff !== undefined && (
+          <div
+            className={`flex items-center gap-md p-lg rounded-xl border mt-lg ${
+              isOfferedHigher
+                ? "bg-green-50 border-green-200"
+                : offeredVsEquivalentDiff < -0.5
+                  ? "bg-red-50 border-red-200"
+                  : "bg-surface-container-low border-outline-variant"
+            }`}
+          >
+            <div
+              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                isOfferedHigher
+                  ? "bg-green-100"
+                  : offeredVsEquivalentDiff < -0.5
+                    ? "bg-red-100"
+                    : "bg-surface-container"
+              }`}
+            >
+              <span
+                className={`material-symbols-outlined text-[20px] ${
+                  isOfferedHigher
+                    ? "text-green-600"
+                    : offeredVsEquivalentDiff < -0.5
+                      ? "text-red-600"
+                      : "text-secondary"
+                }`}
+              >
+                {isOfferedHigher
+                  ? "trending_up"
+                  : offeredVsEquivalentDiff < -0.5
+                    ? "trending_down"
+                    : "remove"}
+              </span>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-sm flex-wrap">
+                <span
+                  className={`font-manrope text-h3 font-tnum ${
+                    isOfferedHigher
+                      ? "text-green-700"
+                      : offeredVsEquivalentDiff < -0.5
+                        ? "text-red-700"
+                        : "text-on-surface"
+                  }`}
+                >
+                  {isOfferedHigher ? "+" : offeredVsEquivalentDiff < -0.5 ? "-" : ""}
+                  {offeredAbsPercent}%
+                </span>
+                <span
+                  className={`font-inter text-label-sm uppercase tracking-widest px-sm py-xs rounded-full ${
+                    isOfferedHigher
+                      ? "bg-green-100 text-green-700"
+                      : offeredVsEquivalentDiff < -0.5
+                        ? "bg-red-100 text-red-700"
+                        : "bg-surface-container text-secondary"
+                  }`}
+                >
+                  {isOfferedHigher
+                    ? "Better offer"
+                    : offeredVsEquivalentDiff < -0.5
+                      ? "Lower offer"
+                      : "Fair offer"}
+                </span>
+              </div>
+              <p className="font-inter text-body-sm text-on-surface-variant mt-xs">
+                {offeredMessage}
+              </p>
+            </div>
+          </div>
+        )}
 
         <p className="mt-lg font-inter text-label-sm text-on-surface-variant text-center">
           Based on static exchange rates and cost-of-living index. For

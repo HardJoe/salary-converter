@@ -59,5 +59,10 @@ export function formatCurrency(amount: number, symbol: string, currency: string)
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(Math.round(amount))
-  return `${currency} ${formatted}`
+  return `${symbol}${formatted}`
+}
+
+export function compareOfferedSalary(offeredSalary: number, equivalentSalary: number): number {
+  if (equivalentSalary === 0) return 0
+  return ((offeredSalary - equivalentSalary) / equivalentSalary) * 100
 }

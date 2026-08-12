@@ -17,4 +17,6 @@ export interface ConversionResult {
   toCurrency: string
   fromSymbol: string
   toSymbol: string
+  offeredSalary?: number
+  offeredVsEquivalentDiff?: number
 }

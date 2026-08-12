@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { SalaryForm } from '../components/SalaryForm'
-import { ResultCard } from '../components/ResultCard'
 import { CurrencyRotator } from '../components/CurrencyRotator'
 import { countries, findCountry } from '../lib/countries'
 import { getColIndex } from '../lib/costOfLiving'
-import { convertCurrency, adjustForCostOfLiving, calcPercentageDiff } from '../lib/convert'
+import { convertCurrency, adjustForCostOfLiving, calcPercentageDiff, compareOfferedSalary } from '../lib/convert'
 import type { ConversionResult, Frequency } from '../types'
 
 export const Route = createFileRoute('/')({
@@ -35,6 +34,7 @@ function HomePage() {
   const [frequency, setFrequency] = useState<Frequency>('yearly')
   const [fromCountry, setFromCountry] = useState(defaultFrom)
   const [toCountry, setToCountry] = useState(defaultTo)
+  const [offeredSalary, setOfferedSalary] = useState(0)
   const [result, setResult] = useState<ConversionResult | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -57,6 +57,8 @@ function HomePage() {
     const adjustedSalary = adjustForCostOfLiving(convertedSalary, fromIndex, toIndex)
     const percentageDiff = calcPercentageDiff(adjustedSalary, convertedSalary)
 
+    const offeredVsEquivalentDiff = offeredSalary > 0 ? compareOfferedSalary(offeredSalary, adjustedSalary) : undefined
+
     setResult({
       annualSalary,
       convertedSalary,
@@ -66,6 +68,8 @@ function HomePage() {
       toCurrency: toCountry.currency,
       fromSymbol: fromCountry.symbol,
       toSymbol: toCountry.symbol,
+      offeredSalary: offeredSalary > 0 ? offeredSalary : undefined,
+      offeredVsEquivalentDiff,
     })
 
     navigate({
@@ -98,46 +102,16 @@ function HomePage() {
           fromCountry={fromCountry}
           toCountry={toCountry}
           loading={loading}
+          offeredSalary={offeredSalary}
+          result={result}
           onSalaryChange={setSalary}
           onFrequencyChange={setFrequency}
           onFromCountryChange={(c) => { setFromCountry(c); setResult(null) }}
           onToCountryChange={(c) => { setToCountry(c); setResult(null) }}
+          onOfferedSalaryChange={setOfferedSalary}
           onSwap={handleSwap}
           onCompare={handleCompare}
         />
-
-        {result && (
-          <ResultCard
-            result={result}
-            fromCountry={fromCountry}
-            toCountry={toCountry}
-          />
-        )}
-
-        <div className="mt-xl flex flex-wrap justify-center gap-xl opacity-60">
-          <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined text-secondary text-[20px]">
-              verified_user
-            </span>
-            <span className="font-inter text-label-sm text-secondary uppercase tracking-widest">
-              Real-time Tax Data
-            </span>
-          </div>
-          <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined text-secondary text-[20px]">public</span>
-            <span className="font-inter text-label-sm text-secondary uppercase tracking-widest">
-              150+ Jurisdictions
-            </span>
-          </div>
-          <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined text-secondary text-[20px]">
-              trending_up
-            </span>
-            <span className="font-inter text-label-sm text-secondary uppercase tracking-widest">
-              PPP Adjusted
-            </span>
-          </div>
-        </div>
       </section>
     </main>
   )
