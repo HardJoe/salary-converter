@@ -95,6 +95,15 @@ export function convertSalaryByFrequency(
     return Math.round(converted)
   } else {
     // For 2 decimals: multiply by 100, round, divide by 100
-    return Math.round(converted * Math.pow(10, decimals)) / Math.pow(10, decimals)
+    const rounded = Math.round(converted * Math.pow(10, decimals)) / Math.pow(10, decimals)
+
+    // If very close to a whole number (within 0.1), round to whole number
+    // This fixes floating-point precision issues with round-trip conversions
+    const wholeNumber = Math.round(rounded)
+    if (Math.abs(rounded - wholeNumber) < 0.1) {
+      return wholeNumber
+    }
+
+    return rounded
   }
 }
