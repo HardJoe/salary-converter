@@ -49,7 +49,7 @@ function HomePage() {
     setResult(null)
   }
 
-  async function handleCompare(salaryOverride?: number, fromCountryOverride?: typeof fromCountry, toCountryOverride?: typeof toCountry) {
+  async function handleCompare(salaryOverride?: number, frequencyOverride?: Frequency, fromCountryOverride?: typeof fromCountry, toCountryOverride?: typeof toCountry) {
     const requestId = ++latestRequestRef.current
     setLoading(true)
     setResult(null)
@@ -59,7 +59,8 @@ function HomePage() {
     if (requestId !== latestRequestRef.current) return
 
     const currentSalary = salaryOverride ?? salary
-    const annualSalary = frequency === 'monthly' ? currentSalary * 12 : currentSalary
+    const currentFrequency = frequencyOverride ?? frequency
+    const annualSalary = currentFrequency === 'monthly' ? currentSalary * 12 : currentSalary
     const from = fromCountryOverride ?? fromCountry
     const to = toCountryOverride ?? toCountry
     const adjustedSalary = convertCurrencyByPPP(annualSalary, from.currency, to.currency)
@@ -105,8 +106,8 @@ function HomePage() {
           result={result}
           onSalaryChange={setSalary}
           onFrequencyChange={setFrequency}
-          onFromCountryChange={(c) => { setFromCountry(c); setResult(null); handleCompare(salary, c, toCountry) }}
-          onToCountryChange={(c) => { setToCountry(c); setResult(null); handleCompare(salary, fromCountry, c) }}
+          onFromCountryChange={(c) => { setFromCountry(c); setResult(null); handleCompare(salary, undefined, c, toCountry) }}
+          onToCountryChange={(c) => { setToCountry(c); setResult(null); handleCompare(salary, undefined, fromCountry, c) }}
           onOfferedSalaryChange={setOfferedSalary}
           onSwap={handleSwap}
           onCompare={handleCompare}

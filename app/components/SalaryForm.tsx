@@ -22,7 +22,7 @@ interface SalaryFormProps {
   onToCountryChange: (v: Country) => void;
   onOfferedSalaryChange: (v: number) => void;
   onSwap: () => void;
-  onCompare: (salary?: number) => void;
+  onCompare: (salary?: number, frequency?: Frequency) => void;
   salaryInputRef?: React.RefObject<HTMLInputElement>;
 }
 
@@ -48,6 +48,8 @@ export function SalaryForm({
       maximumFractionDigits: 0,
     }) || "0";
 
+  const displayAdjustedSalary = result?.adjustedSalary ? (frequency === 'monthly' ? result.adjustedSalary / 12 : result.adjustedSalary) : undefined;
+
   return (
     <div className="w-full max-w-2xl bg-surface-container-lowest dark:bg-surface-container-low border border-outline-variant rounded-2xl shadow-level-1 p-lg md:p-xl md:py-8 transition-colors duration-200">
       <div className="space-y-lg">
@@ -66,6 +68,7 @@ export function SalaryForm({
                   );
                   onSalaryChange(converted);
                   onFrequencyChange("yearly");
+                  onCompare(converted, "yearly");
                 }
               }}
               className={`px-lg py-sm rounded-full font-inter text-label-md transition-all ${
@@ -88,6 +91,7 @@ export function SalaryForm({
                   );
                   onSalaryChange(converted);
                   onFrequencyChange("monthly");
+                  onCompare(converted, "monthly");
                 }
               }}
               className={`px-lg py-xs rounded-full font-inter text-label-md transition-all ${
@@ -156,7 +160,7 @@ export function SalaryForm({
               ) : (
                 <div className="flex flex-col">
                   <span className="font-inter text-3xl md:text-4xl font-semibold text-on-surface">
-                    {result?.adjustedSalary?.toLocaleString("en-US", {
+                    {displayAdjustedSalary?.toLocaleString("en-US", {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
                     }) || "0"}
@@ -173,14 +177,14 @@ export function SalaryForm({
               <div className="flex flex-col items-end text-right">
                 <span className="font-inter text-body-md text-on-surface-variant">
                   {fromCountry.currency}{" "}
-                  {convertCurrencyByMarketRate(result?.adjustedSalary, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
+                  {convertCurrencyByMarketRate(displayAdjustedSalary ?? 0, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })}
                 </span>
                 <span className="font-inter text-body-sm text-on-surface-variant mt-xs">
                   ({toCountry.currency} 1 ≈ {fromCountry.currency}{" "}
-                  {convertCurrencyByMarketRate(1, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
+                  {(1 / convertCurrencyByMarketRate(1, fromCountry.currency, toCountry.currency)).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 6,
                   })})
@@ -211,7 +215,7 @@ export function SalaryForm({
               {loading && !result ? (
                 <Skeleton className="inline-block h-5 w-12 rounded" />
               ) : (
-                result?.adjustedSalary?.toLocaleString("en-US", {
+                displayAdjustedSalary?.toLocaleString("en-US", {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 }) || "0"
