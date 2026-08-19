@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { SalaryForm } from '../components/SalaryForm'
 import { CurrencyRotator } from '../components/CurrencyRotator'
 import { countries, findCountry } from '../lib/countries'
-import { convertCurrency, calcPercentageDiff, compareOfferedSalary } from '../lib/convert'
+import { convertCurrencyByPPP, calcPercentageDiff, compareOfferedSalary } from '../lib/convert'
+import { preloadExchangeRates } from '../lib/exchangeRates'
 import type { ConversionResult, Frequency } from '../types'
 
 export const Route = createFileRoute('/')({
@@ -38,6 +39,10 @@ function HomePage() {
   const [loading, setLoading] = useState(false)
   const latestRequestRef = useRef(0)
 
+  useEffect(() => {
+    preloadExchangeRates()
+  }, [])
+
   function handleSwap() {
     setFromCountry(toCountry)
     setToCountry(fromCountry)
@@ -55,7 +60,7 @@ function HomePage() {
 
     const currentSalary = salaryOverride ?? salary
     const annualSalary = frequency === 'monthly' ? currentSalary * 12 : currentSalary
-    const adjustedSalary = convertCurrency(annualSalary, fromCountry.currency, toCountry.currency)
+    const adjustedSalary = convertCurrencyByPPP(annualSalary, fromCountry.currency, toCountry.currency)
 
     const offeredVsEquivalentDiff = offeredSalary > 0 ? compareOfferedSalary(offeredSalary, adjustedSalary) : undefined
 

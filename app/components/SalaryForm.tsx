@@ -5,7 +5,7 @@ import {
   convertSalaryByFrequency,
   formatNumberWithSeparators,
 } from "../lib/salaryInput";
-import { formatCurrency, convertCurrency } from "../lib/convert";
+import { formatCurrency, convertCurrencyByMarketRate } from "../lib/convert";
 import type { Country, Frequency, ConversionResult } from "../types";
 
 interface SalaryFormProps {
@@ -22,7 +22,7 @@ interface SalaryFormProps {
   onToCountryChange: (v: Country) => void;
   onOfferedSalaryChange: (v: number) => void;
   onSwap: () => void;
-  onCompare: () => void;
+  onCompare: (salary?: number) => void;
   salaryInputRef?: React.RefObject<HTMLInputElement>;
 }
 
@@ -175,16 +175,16 @@ export function SalaryForm({
               <div className="flex flex-col items-end text-right">
                 <span className="font-inter text-body-md text-on-surface-variant">
                   {fromCountry.currency}{" "}
-                  {convertCurrency(result.convertedSalary, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
+                  {convertCurrencyByMarketRate(result?.adjustedSalary, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })}
                 </span>
                 <span className="font-inter text-body-sm text-on-surface-variant mt-xs">
                   ({toCountry.currency} 1 ≈ {fromCountry.currency}{" "}
-                  {convertCurrency(1, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
+                  {convertCurrencyByMarketRate(1, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
+                    maximumFractionDigits: 6,
                   })})
                 </span>
               </div>
@@ -348,7 +348,7 @@ function CountryDropdown({ value, options, onChange }: CountryDropdownProps) {
 interface SalaryInputProps {
   salary: number;
   onSalaryChange: (v: number) => void;
-  onCompare: () => void;
+  onCompare: (salary?: number) => void;
   symbol: string;
 }
 
@@ -372,7 +372,7 @@ function SalaryInput({
           const digitsOnly = validateAndFilterInput(e.target.value);
           const numValue = digitsOnly === "" ? 0 : parseInt(digitsOnly, 10);
           onSalaryChange(numValue);
-          onCompare();
+          onCompare(numValue);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
