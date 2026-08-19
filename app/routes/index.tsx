@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { SalaryForm } from '../components/SalaryForm'
 import { CurrencyRotator } from '../components/CurrencyRotator'
@@ -27,7 +27,7 @@ function HomePage() {
     (search.to ? findCountry(search.to) : undefined) ??
     countries.find((c) => c.code === 'DE') ??
     countries[2]!
-  const defaultSalary = search.salary ? Number(search.salary) : 85000
+  const defaultSalary = search.salary ? Number(search.salary) : 0
 
   const [salary, setSalary] = useState(defaultSalary)
   const [frequency, setFrequency] = useState<Frequency>('yearly')
@@ -36,6 +36,7 @@ function HomePage() {
   const [offeredSalary, setOfferedSalary] = useState(0)
   const [result, setResult] = useState<ConversionResult | null>(null)
   const [loading, setLoading] = useState(false)
+  const latestRequestRef = useRef(0)
 
   function handleSwap() {
     setFromCountry(toCountry)
@@ -43,13 +44,17 @@ function HomePage() {
     setResult(null)
   }
 
-  async function handleCompare() {
+  async function handleCompare(salaryOverride?: number) {
+    const requestId = ++latestRequestRef.current
     setLoading(true)
     setResult(null)
 
     await new Promise((r) => setTimeout(r, 600))
 
-    const annualSalary = frequency === 'monthly' ? salary * 12 : salary
+    if (requestId !== latestRequestRef.current) return
+
+    const currentSalary = salaryOverride ?? salary
+    const annualSalary = frequency === 'monthly' ? currentSalary * 12 : currentSalary
     const adjustedSalary = convertCurrency(annualSalary, fromCountry.currency, toCountry.currency)
 
     const offeredVsEquivalentDiff = offeredSalary > 0 ? compareOfferedSalary(offeredSalary, adjustedSalary) : undefined
@@ -65,14 +70,6 @@ function HomePage() {
       toSymbol: toCountry.symbol,
       offeredSalary: offeredSalary > 0 ? offeredSalary : undefined,
       offeredVsEquivalentDiff,
-    })
-
-    navigate({
-      search: {
-        salary: String(salary),
-        from: fromCountry.code,
-        to: toCountry.code,
-      },
     })
 
     setLoading(false)
