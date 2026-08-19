@@ -3,8 +3,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { SalaryForm } from '../components/SalaryForm'
 import { CurrencyRotator } from '../components/CurrencyRotator'
 import { countries, findCountry } from '../lib/countries'
-import { getColIndex } from '../lib/costOfLiving'
-import { convertCurrency, adjustForCostOfLiving, calcPercentageDiff, compareOfferedSalary } from '../lib/convert'
+import { convertCurrency, calcPercentageDiff, compareOfferedSalary } from '../lib/convert'
 import type { ConversionResult, Frequency } from '../types'
 
 export const Route = createFileRoute('/')({
@@ -51,19 +50,15 @@ function HomePage() {
     await new Promise((r) => setTimeout(r, 600))
 
     const annualSalary = frequency === 'monthly' ? salary * 12 : salary
-    const convertedSalary = convertCurrency(annualSalary, fromCountry.currency, toCountry.currency)
-    const fromIndex = getColIndex(fromCountry.code)
-    const toIndex = getColIndex(toCountry.code)
-    const adjustedSalary = adjustForCostOfLiving(convertedSalary, fromIndex, toIndex)
-    const percentageDiff = calcPercentageDiff(adjustedSalary, convertedSalary)
+    const adjustedSalary = convertCurrency(annualSalary, fromCountry.currency, toCountry.currency)
 
     const offeredVsEquivalentDiff = offeredSalary > 0 ? compareOfferedSalary(offeredSalary, adjustedSalary) : undefined
 
     setResult({
       annualSalary,
-      convertedSalary,
+      convertedSalary: adjustedSalary,
       adjustedSalary,
-      percentageDiff,
+      percentageDiff: 0,
       fromCurrency: fromCountry.currency,
       toCurrency: toCountry.currency,
       fromSymbol: fromCountry.symbol,
