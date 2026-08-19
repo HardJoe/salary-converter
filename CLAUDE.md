@@ -53,3 +53,7 @@ The `app/components/SalaryForm.tsx` component has been redesigned to match a cle
 - All props properly typed with existing `SalaryFormProps` interface
 - All callbacks use correct prop types (Frequency, Country, number)
 - Component returns valid JSX with no unresolved references
+
+## Development & Testing Guidelines
+- **Do not start a new dev server** - The app should be tested via manual browser interaction or by the user
+- **Do not use Playwright for testing** - Avoid browser automation testing tools

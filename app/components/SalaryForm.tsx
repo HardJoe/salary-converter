@@ -113,7 +113,6 @@ export function SalaryForm({
                 options={countries}
                 onChange={(c) => {
                   onFromCountryChange(c);
-                  onCompare();
                 }}
               />
             </div>
@@ -143,7 +142,6 @@ export function SalaryForm({
                 options={countries}
                 onChange={(c) => {
                   onToCountryChange(c);
-                  onCompare();
                 }}
               />
             </div>

@@ -49,7 +49,7 @@ function HomePage() {
     setResult(null)
   }
 
-  async function handleCompare(salaryOverride?: number) {
+  async function handleCompare(salaryOverride?: number, fromCountryOverride?: typeof fromCountry, toCountryOverride?: typeof toCountry) {
     const requestId = ++latestRequestRef.current
     setLoading(true)
     setResult(null)
@@ -60,7 +60,9 @@ function HomePage() {
 
     const currentSalary = salaryOverride ?? salary
     const annualSalary = frequency === 'monthly' ? currentSalary * 12 : currentSalary
-    const adjustedSalary = convertCurrencyByPPP(annualSalary, fromCountry.currency, toCountry.currency)
+    const from = fromCountryOverride ?? fromCountry
+    const to = toCountryOverride ?? toCountry
+    const adjustedSalary = convertCurrencyByPPP(annualSalary, from.currency, to.currency)
 
     const offeredVsEquivalentDiff = offeredSalary > 0 ? compareOfferedSalary(offeredSalary, adjustedSalary) : undefined
 
@@ -69,10 +71,10 @@ function HomePage() {
       convertedSalary: adjustedSalary,
       adjustedSalary,
       percentageDiff: 0,
-      fromCurrency: fromCountry.currency,
-      toCurrency: toCountry.currency,
-      fromSymbol: fromCountry.symbol,
-      toSymbol: toCountry.symbol,
+      fromCurrency: from.currency,
+      toCurrency: to.currency,
+      fromSymbol: from.symbol,
+      toSymbol: to.symbol,
       offeredSalary: offeredSalary > 0 ? offeredSalary : undefined,
       offeredVsEquivalentDiff,
     })
@@ -103,8 +105,8 @@ function HomePage() {
           result={result}
           onSalaryChange={setSalary}
           onFrequencyChange={setFrequency}
-          onFromCountryChange={(c) => { setFromCountry(c); setResult(null) }}
-          onToCountryChange={(c) => { setToCountry(c); setResult(null) }}
+          onFromCountryChange={(c) => { setFromCountry(c); setResult(null); handleCompare(salary, c, toCountry) }}
+          onToCountryChange={(c) => { setToCountry(c); setResult(null); handleCompare(salary, fromCountry, c) }}
           onOfferedSalaryChange={setOfferedSalary}
           onSwap={handleSwap}
           onCompare={handleCompare}
