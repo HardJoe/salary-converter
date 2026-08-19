@@ -5,7 +5,7 @@ import {
   convertSalaryByFrequency,
   formatNumberWithSeparators,
 } from "../lib/salaryInput";
-import { formatCurrency } from "../lib/convert";
+import { formatCurrency, convertCurrency } from "../lib/convert";
 import type { Country, Frequency, ConversionResult } from "../types";
 
 interface SalaryFormProps {
@@ -148,20 +148,47 @@ export function SalaryForm({
               />
             </div>
           </div>
-          <div className="flex items-center gap-lg">
-            <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-20">
-              {toCountry.currency}
-            </span>
-            {loading && !result ? (
-              <Skeleton className="h-7 w-40 rounded" />
-            ) : (
-              <span className="font-inter text-3xl md:text-4xl font-semibold text-on-surface">
-                {result?.adjustedSalary?.toLocaleString("en-US", {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }) || "0"}
+          <div className="flex items-center justify-between gap-lg">
+            <div className="flex items-center gap-lg flex-1">
+              <span className="font-inter text-3xl md:text-4xl font-bold text-primary w-20">
+                {toCountry.currency}
               </span>
-            )}
+              {loading && !result ? (
+                <Skeleton className="h-7 w-40 rounded" />
+              ) : (
+                <div className="flex flex-col">
+                  <span className="font-inter text-3xl md:text-4xl font-semibold text-on-surface">
+                    {result?.adjustedSalary?.toLocaleString("en-US", {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }) || "0"}
+                  </span>
+                </div>
+              )}
+            </div>
+            {loading && !result ? (
+              <div className="flex flex-col items-end text-right gap-xs">
+                <Skeleton className="h-5 w-32 rounded" />
+                <Skeleton className="h-4 w-40 rounded" />
+              </div>
+            ) : result ? (
+              <div className="flex flex-col items-end text-right">
+                <span className="font-inter text-body-md text-on-surface-variant">
+                  {fromCountry.currency}{" "}
+                  {convertCurrency(result.convertedSalary, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })}
+                </span>
+                <span className="font-inter text-body-sm text-on-surface-variant mt-xs">
+                  ({toCountry.currency} 1 ≈ {fromCountry.currency}{" "}
+                  {convertCurrency(1, toCountry.currency, fromCountry.currency).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })})
+                </span>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -173,11 +200,14 @@ export function SalaryForm({
             </div>
           </div>
           <p className="font-inter text-body-sm text-on-surface-variant dark:text-on-surface-variant">
-            An offer of{" "}
             <span className="font-semibold text-on-surface">
               {fromCountry.currency} {formattedSalary}
-            </span>{" "}
-            is worth roughly{" "}
+            </span>
+            {" in "}
+            <span className="font-semibold text-on-surface">
+              {fromCountry.name}
+            </span>
+            {" has the same buying power as "}
             <span className="font-semibold text-on-surface">
               {toCountry.currency}{" "}
               {loading && !result ? (
@@ -188,8 +218,12 @@ export function SalaryForm({
                   maximumFractionDigits: 0,
                 }) || "0"
               )}
-            </span>{" "}
-            in purchasing power.
+            </span>
+            {" in "}
+            <span className="font-semibold text-on-surface">
+              {toCountry.name}
+            </span>
+            .
           </p>
         </div>
       </div>
