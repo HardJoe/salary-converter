@@ -8,6 +8,35 @@ import {
 import { formatCurrency, convertCurrencyByMarketRate } from "../lib/convert";
 import type { Country, Frequency, ConversionResult } from "../types";
 
+function formatExchangeRate(value: number): string {
+  if (value >= 0.01) {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  // For very small numbers, show until 2 non-zero digits
+  const str = value.toFixed(20);
+  const decimalPart = str.split(".")[1];
+
+  let nonZeroCount = 0;
+  let decimalPlaces = 0;
+
+  for (let i = 0; i < decimalPart.length; i++) {
+    if (decimalPart[i] !== "0") {
+      nonZeroCount++;
+      decimalPlaces = i + 1;
+      if (nonZeroCount >= 2) break;
+    }
+  }
+
+  return value.toLocaleString("en-US", {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+  });
+}
+
 interface SalaryFormProps {
   salary: number;
   frequency: Frequency;
@@ -184,10 +213,7 @@ export function SalaryForm({
                 </span>
                 <span className="font-inter text-body-sm text-on-surface-variant mt-xs">
                   ({toCountry.currency} 1 ≈ {fromCountry.currency}{" "}
-                  {(1 / convertCurrencyByMarketRate(1, fromCountry.currency, toCountry.currency)).toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  })})
+                  {formatExchangeRate(convertCurrencyByMarketRate(1, toCountry.currency, fromCountry.currency))})
                 </span>
               </div>
             ) : null}
