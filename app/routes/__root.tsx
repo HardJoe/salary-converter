@@ -123,28 +123,8 @@ function Footer() {
             SalaryScale
           </span>
           <p className="font-manrope text-xs text-on-surface-variant">
-            © 2026 SalaryScale Financial. All rights reserved.
+            © 2026 Jonathan Hartman. All rights reserved.
           </p>
-        </div>
-        <div className="flex gap-8">
-          <a
-            href="#"
-            className="font-manrope text-xs text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="#"
-            className="font-manrope text-xs text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
-          >
-            Terms of Service
-          </a>
-          <a
-            href="#"
-            className="font-manrope text-xs text-on-surface-variant hover:text-on-surface transition-colors duration-200 cursor-pointer"
-          >
-            Contact Support
-          </a>
         </div>
       </div>
     </footer>
