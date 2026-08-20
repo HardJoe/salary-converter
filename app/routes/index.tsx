@@ -91,7 +91,7 @@ function HomePage() {
             Know your worth in <CurrencyRotator />
           </h1>
           <p className="font-inter text-body-sm text-secondary">
-            Compare purchasing power between 150+ countries with our high-fidelity
+            Compare purchasing power between 25+ countries with our high-fidelity
             relocation calculator.
           </p>
         </div>
@@ -112,6 +112,11 @@ function HomePage() {
           onSwap={handleSwap}
           onCompare={handleCompare}
         />
+
+        <p className="text-center text-body-sm text-on-surface-variant mt-md">
+          PPP data from World Bank (International Comparison Program).<br />
+          Exchange rates from exchangerate-api.com.
+        </p>
       </section>
     </main>
   )
